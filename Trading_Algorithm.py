@@ -2,7 +2,6 @@ import MetaTrader5 as mt
 from datetime import datetime
 import pandas as pd
 import time as time
-import math as math
 
 mt.initialize()
 
@@ -11,7 +10,6 @@ mt.initialize()
 password = "password123"
 server = "OANDATMS-MT5"
 login = 12345678
-
 mt.login(login, password, server)
 
 
@@ -53,10 +51,10 @@ buy_price = mt.symbol_info_tick(ticker).ask
 sell_price = mt.symbol_info_tick(ticker).bid
 
 
-
 tmp = pip_size
 i = True
 pip_dec = 0
+
 
 # Finds the decimal place of a single pip for specified currency
 while i:
@@ -89,6 +87,7 @@ def create_order(action, ticker, qty, order_type, price, sl, tp):
     if result.volume != 0:
         print(f"\nA {order} has been placed at a price of {price}!\n")
 
+
 def close_order_pending():
     close_stop_order = {
         "action": mt.TRADE_ACTION_REMOVE,
@@ -96,15 +95,16 @@ def close_order_pending():
                }
     mt.order_send(close_stop_order)
 
+
 def close_all_pending():
     length = len(mt.orders_get())
     for i in range(length):
         close_order_pending()
 
+
 def calculate_profit(hours):
     # Finds combined profit from closed trades and from 
     # currently open trades over the last {hours} hours
-
 
     # MT5 charts are 2 hours ahead of time returned by time.time() function, so
     # a 7200 second offset is added
@@ -114,9 +114,118 @@ def calculate_profit(hours):
     total = mt.history_deals_total(from_, to_)
     profit = 0
     for i in range(0,total):
-        profit += mt.history_deals_get(from_, to_)[i].profit # Closed trades profit
-    final_profit = profit + mt.account_info()._asdict()["profit"] # Close trades + open trades profit
+        profit += mt.history_deals_get(from_, to_)[i].profit                 # Closed trades profit
+    final_profit = profit + mt.account_info()._asdict()["profit"]            # Closed trades + open trades profit
     print(f"The total profit on this account over the last {hours} hours is {round(final_profit,2)}")
+
+
+def close_order(ticker, qty, order_type, price, index):
+    close_req = {
+        "action" : mt.TRADE_ACTION_DEAL,
+        "symbol" : ticker,
+        "price" : price,
+        "type" : order_type,
+        "volume" : qty,
+        "type_time" : mt.ORDER_TIME_GTC,
+        "type_filling" : mt.ORDER_FILLING_FOK,
+        "comment" : "close python position",
+        "position" : mt.positions_get()[index].ticket
+    }
+    mt.order_send(close_req)
+
+
+def close_all_open():
+    for i in range(len(mt.positions_get())):
+        close_order(ticker, qty, sell_order, sell_price, 0)
+
+def close_all():
+    try:
+        while(True):
+            close_all_open()
+            close_all_pending()
+    except:
+        pass
+
+
+def take_profit():
+    # Closes all open positions that are at a profit
+
+    length = len(mt.positions_get())
+    print(f"\n there are a total of {length} open buy positions\n")
+    i = True
+    j = 0
+    while (i == True):
+        try:
+            if mt.positions_get()[j].profit > 0:
+                close_order(ticker, qty, sell_order, mt.symbol_info_tick(ticker).bid, j)
+                print(f"\nOrder {mt.positions_get()[j].ticket} has closed\n")
+            else:
+                j += 1
+        except:
+            i = False
+
+
+def stop_loss():
+    # Closes all open positions that are at a loss
+
+    length = len(mt.positions_get())
+    print(f"\n there are a total of {length} open BUY positions\n")
+    i = True
+    j = 0
+    while (i == True):
+        print(f"Position no. {j}")
+        try:
+            if mt.positions_get()[j].profit < 0:
+                close_order(ticker, qty, sell_order, mt.symbol_info_tick(ticker).bid, j)
+                print(f"\nOrder {mt.positions_get()[j].ticket} has closed\n")
+            else:
+                j += 1
+        except:
+            i = False
+
+
+def mod_sl(position, amount):
+        # Modifies stop loss of a position
+
+        for pos in mt.positions_get():
+            if pos.ticket == position:
+                tp = pos.tp
+        mod_sl = {
+            "action" : mt.TRADE_ACTION_SLTP,
+            "position" : position,
+            "sl" : amount,
+            "tp" : tp
+                }
+        mt.order_send(mod_sl)
+
+
+def mod_tp(position, amount):
+    # Modifies take profit of a position
+
+    for pos in mt.positions_get():
+            if pos.ticket == position:
+                sl = pos.sl
+    mod_tp = {
+        "action" : mt.TRADE_ACTION_SLTP,
+        "position" : position,
+        "sl" : sl,
+        "tp" : amount
+            }
+    mt.order_send(mod_tp)
+
+
+def mod_all_tp(amount):
+    # Modifies take profit for all open orders
+
+    for pos in mt.positions_get():
+        mod_tp(pos.ticket, amount)
+
+
+def mod_all_sl(amount):
+    # Modifies stop loss for all open orders
+    for pos in mt.positions_get():
+        mod_sl(pos.ticket, amount)
+
 
 def Trade_Bot():
     while(True):
@@ -177,122 +286,21 @@ def Trade_Bot():
                     limit_skip2 = True 
                     
                 
-
             if ((not stop_skip1) and (not stop_skip2)):
                 buy_sl = stop_price - b_sl_points
                 buy_tp = stop_price + b_tp_points
                 result = create_order(action, ticker, qty, buy_stop_order, stop_price, buy_sl, buy_tp)
-                #print(result)
+                # print(result)
                 
             if ((not limit_skip1) and (not limit_skip2)):
                 buy_sl = limit_price - b_sl_points
                 buy_tp = limit_price + b_tp_points
                 result = create_order(action, ticker, qty, buy_limit_order, limit_price, buy_sl, buy_tp)
-                #print(result)
+                # print(result)
 
-        #time.sleep(1)
+        # time.sleep(1)
 
         # time.sleep(1) and print(result) used for debugging code
-
-def close_order(ticker, qty, order_type, price, index):
-    close_req = {
-        "action" : mt.TRADE_ACTION_DEAL,
-        "symbol" : ticker,
-        "price" : price,
-        "type" : order_type,
-        "volume" : qty,
-        "type_time" : mt.ORDER_TIME_GTC,
-        "type_filling" : mt.ORDER_FILLING_FOK,
-        "comment" : "close python position",
-        "position" : mt.positions_get()[index].ticket
-    }
-    mt.order_send(close_req)
-
-def close_all_open():
-    for i in range(len(mt.positions_get())):
-        close_order(ticker, qty, sell_order, sell_price, 0)
-
-def close_all():
-    try:
-        while(True):
-            close_all_open()
-            close_all_pending()
-    except:
-        pass
-
-def take_profit():
-    # Closes all open positions that are at a profit
-
-    length = len(mt.positions_get())
-    print(f"\n there are a total of {length} open buy positions\n")
-    i = True
-    j = 0
-    while (i == True):
-        try:
-            if mt.positions_get()[j].profit > 0:
-                close_order(ticker, qty, sell_order, mt.symbol_info_tick(ticker).bid, j)
-                print(f"\nOrder {mt.positions_get()[j].ticket} has closed\n")
-            else:
-                j += 1
-        except:
-            i = False
-
-def stop_loss():
-    # Closes all open positions that are at a loss
-
-    length = len(mt.positions_get())
-    print(f"\n there are a total of {length} open BUY positions\n")
-    i = True
-    j = 0
-    while (i == True):
-        print(f"Position no. {j}")
-        try:
-            if mt.positions_get()[j].profit < 0:
-                close_order(ticker, qty, sell_order, mt.symbol_info_tick(ticker).bid, j)
-                print(f"\nOrder {mt.positions_get()[j].ticket} has closed\n")
-            else:
-                j += 1
-        except:
-            i = False
-
-def mod_sl(position, amount):
-        # Modifies stop loss of a position
-
-        for pos in mt.positions_get():
-            if pos.ticket == position:
-                tp = pos.tp
-        mod_sl = {
-            "action" : mt.TRADE_ACTION_SLTP,
-            "position" : position,
-            "sl" : amount,
-            "tp" : tp
-                }
-        mt.order_send(mod_sl)
-
-def mod_tp(position, amount):
-    # Modifies take profit of a position
-
-    for pos in mt.positions_get():
-            if pos.ticket == position:
-                sl = pos.sl
-    mod_tp = {
-        "action" : mt.TRADE_ACTION_SLTP,
-        "position" : position,
-        "sl" : sl,
-        "tp" : amount
-            }
-    mt.order_send(mod_tp)
-        
-def mod_all_tp(amount):
-    # Modifies take profit for all open orders
-
-    for pos in mt.positions_get():
-        mod_tp(pos.ticket, amount)
-
-def mod_all_sl(amount):
-    # Modifies stop loss for all open orders
-    for pos in mt.positions_get():
-        mod_sl(pos.ticket, amount)
 
 
 # List of useful functions below:
