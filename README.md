@@ -18,4 +18,4 @@ The trade window is blank - no orders have been placed yet
 ## After activation
 <img width="2558" height="768" alt="Screenshot 2025-09-23 175655" src="https://github.com/user-attachments/assets/e48a9892-3d5f-4cda-b7b9-8b0dae6b13ef" />
 
-Immediately, the trade bot executes several orders per second, filling the screen with red and green lines. Each green line indicates a seperate pending order, while each red line corresponds to either a take profit or stop loss of each pending order. The bot continues to place orders as the price goes up or down, or if a large enough gap appears in-between orders.
+Immediately, the trade bot executes several orders per second, filling the screen with equidistant red and green lines. Each green line indicates a seperate pending order, while each red line corresponds to either a take profit or stop loss of each pending order. The bot continues to place orders as the price goes up or down, or if a large enough gap appears in-between orders.
