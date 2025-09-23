@@ -2,9 +2,9 @@ import MetaTrader5 as mt
 
 # Enter account details below
 
-password = "753YFc#K"
-server = "OANDATMS-MT5"
-login = 62593624
+password = "PASSWORD"
+server = "SERVER_NAME"
+login = LOGIN_NUMBER
 
 
 
