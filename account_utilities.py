@@ -2,33 +2,6 @@ import MetaTrader5 as mt
 import time as time
 import config as c
 import trading_utilities as tu
-from trading_utilities import mod_sl, mod_tp
-
-# Wrapper for mt.login()
-
-def MT5Login(login, password, server):
-    if not mt.login(login, password, server):
-        print(f"Login failed, unable to login to account no. {login}.")
-    else:
-        print("Login successful!")
-
-
-
-# Wrapper for mt.intialize()
-
-def MT5Initialize():
-    if not mt.initialize():
-        print("Intialization failed, please try again")
-    else:
-        print("Initialization successful!")
-
-
-
-# Input is pip amount, output is the pip equivalent in specified currency
-
-def pip(amount):
-    money = amount * c.pip_size
-    return round(float(money), 5)
 
 
 
@@ -116,11 +89,11 @@ def stop_loss():
 def mod_all_tp(amount):
     # Modifies take profit for all open orders
     for pos in mt.positions_get():
-        mod_tp(pos.ticket, amount)
+        tu.mod_tp(pos.ticket, amount)
 
 
 
 def mod_all_sl(amount):
     # Modifies stop loss for all open orders
     for pos in mt.positions_get():
-        mod_sl(pos.ticket, amount)
+        tu.mod_sl(pos.ticket, amount)

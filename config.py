@@ -1,13 +1,28 @@
 import MetaTrader5 as mt
-import time as time
-from account_utilities import pip
-
 
 # Enter account details below
 
-password = "password123"
+password = "753YFc#K"
 server = "OANDATMS-MT5"
-login = 12345678
+login = 62593624
+
+
+
+# Wrapper for mt.intialize()
+
+if not mt.initialize():
+    print("Intialization failed, please try again")
+else:
+    print("Initialization successful!")
+
+
+
+# Wrapper for mt.login()
+
+if not mt.login(login, password, server):
+    print(f"Login failed, unable to login to account no. {login}.")
+else:
+    print("Login successful!")
 
 
 
@@ -28,6 +43,10 @@ tol_percent = 5             # Set to 5% as default. Refers to the % error of pip
                             # to one another.
 
 ###############################################################################
+
+
+
+
 
 
 timeframe = mt.TIMEFRAME_M1 

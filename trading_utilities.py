@@ -1,11 +1,15 @@
 import MetaTrader5 as mt
 import config as c
-from account_utilities import pip
 
 import time as time
 import pandas as pd
 import math as math
 
+# Input is pip amount, output is the pip equivalent in specified currency
+
+def pip(amount):
+    money = amount * c.pip_size
+    return round(float(money), 5)
 
 increment_size = c.increment_size
 tolerance = pip(increment_size) * (c.tol_percent / 100)

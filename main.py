@@ -1,11 +1,5 @@
-import MetaTrader5 as mt
 from trading_utilities import *
 from account_utilities import *
-
-
-MT5Initialize()
-
-MT5Login(c.login, c.password, c.server)
 
 
 # List of usable functions below:
@@ -28,7 +22,7 @@ MT5Login(c.login, c.password, c.server)
 # close_all_pending()
 # calculate_profit()
 # close_all_open()
-# close_all()
+#close_all()
 # take_profit()
 # stop_loss()
 # mod_all_sl()
