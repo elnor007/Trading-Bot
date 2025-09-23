@@ -11,7 +11,11 @@ In order to run this, you must download the MetaTrader5 application and the MT5 
 ## Before activation
 <img width="2558" height="769" alt="Screenshot 2025-09-23 175814" src="https://github.com/user-attachments/assets/e86e0f80-5df8-4c92-a0a6-e612410fe403" />
 
-<br>
+The trade window is blank - no orders have been placed yet
+
+<br><br>
 
 ## After activation
 <img width="2558" height="768" alt="Screenshot 2025-09-23 175655" src="https://github.com/user-attachments/assets/e48a9892-3d5f-4cda-b7b9-8b0dae6b13ef" />
+
+Immediately, the trade bot executes several orders per second, filling the screen with orders. Each green line indicates a seperate pending order, while each red line corresponds to either a take profit or stop loss of each pending order. The bot continues to place orders as the price goes up or down, or if a large enough gap appears in-between orders.
