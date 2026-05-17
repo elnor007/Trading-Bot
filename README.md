@@ -1,6 +1,6 @@
 # Trading Bot - Overview
 
-Developed a trading bot using the MetaTrader5 Python API. The algorithm aims to place pending orders which are equally spaced from one another and also ensures that each order is placed at a unique price point. The amount of space between orders can be set at in the config file.
+Developed a trading bot using the MetaTrader5 Python API. The algorithm aims to place pending orders which are equally spaced from one another and also ensures that each order is placed at a unique price point. The amount of space between orders can be set in the config file.
 
 Also contains many useful functions which automate tedious manual tasks, such as: Closing all the trades, calculating total profit made over x amount of hours, modifying the take profit/stop loss of all open trades, and many more. The python functions and variables are modularised into separate Python scripts to keep everything organised. The config.py file contains variables that other modules depend on, trading_util.py consists of functions that manipulate specified orders/positions, account_util.py uses trading_util.py to create functions that make account-wide changes, and main.py is where everything is called from.
 
